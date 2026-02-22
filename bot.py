@@ -5,14 +5,12 @@ from user import User
 from pyrogram import Client
 from presets import Presets as Msg
 
-
 if bool(os.environ.get("ENV", False)):
     from sample_config import Config
     from sample_config import LOGGER
 else:
     from config import Config
     from config import LOGGER
-
 
 class Bot(Client):
     USER: User = None
@@ -35,10 +33,9 @@ class Bot(Client):
     async def start(self):
         await super().start()
         usr_bot_me = await self.get_me()
-        bot_me = self.USER_ID
         self.set_parse_mode("html")
         self.LOGGER(__name__).info(
-            f"@{usr_bot_me.username}  started! "
+            f"@{usr_bot_me.username} started! "
         )
         self.USER, self.USER_ID = await User().start()
         try:
