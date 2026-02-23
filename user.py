@@ -1,6 +1,5 @@
 #----------------------------------- https://github.com/m4mallu/clonebot --------------------------------------------#
 import os
-
 from pyrogram import Client
 
 if os.environ.get("ENV", False):
@@ -12,12 +11,24 @@ else:
 
 class User(Client):
     def __init__(self):
-        super().__init__(
-            Config.TG_USER_SESSION,
-            api_hash=Config.API_HASH,
-            api_id=Config.APP_ID,
-            workers=4
-        )
+        session = Config.TG_USER_SESSION
+        
+        # Check if the session is a long String Session (BQ...) or a simple filename
+        if session and len(session) > 60:
+            super().__init__(
+                name="actual_user_session",
+                session_string=session, # This handles the long code correctly
+                api_hash=Config.API_HASH,
+                api_id=Config.APP_ID,
+                workers=4
+            )
+        else:
+            super().__init__(
+                session, # This handles old-style filenames
+                api_hash=Config.API_HASH,
+                api_id=Config.APP_ID,
+                workers=4
+            )
         self.LOGGER = LOGGER
 
     async def start(self):
@@ -25,7 +36,7 @@ class User(Client):
         usr_bot_me = await self.get_me()
         self.set_parse_mode("html")
         self.LOGGER(__name__).info(
-            f"@{usr_bot_me.username}  started!"
+            f"@{usr_bot_me.username} started!"
         )
         return self, usr_bot_me.id
 
